@@ -1,7 +1,6 @@
 import { expect, use as chaiUse } from 'chai';
 import { stub } from 'sinon';
 import sinonChai from 'sinon-chai';
-import { JSDOM } from 'jsdom';
 
 import Cookie from 'js-cookie';
 
@@ -9,8 +8,6 @@ import * as SessionStorage from '../src/session-storage';
 import { getTabId, validateKey, INVALID_STORAGE_KEY_ERROR } from '../src/helpers';
 
 chaiUse(sinonChai);
-
-const { window } = new JSDOM('<!DOCTYPE html><p>Hello world</p>');
 
 describe('Helpers', () => {
 

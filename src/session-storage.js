@@ -2,4 +2,4 @@
 
 export const sessionStorageGetItem = (key) => window.sessionStorage.getItem(key);
 
-export const sessionStorageSetItem = (key) => window.sessionStorage.setItem(key);
+export const sessionStorageSetItem = (key, value) => window.sessionStorage.setItem(key, value);
