@@ -1,39 +1,71 @@
 {
-  "name": "@prageeths/browser-tab-tracker",
-  "version": "0.0.1",
-  "description": "A simple way to track multiple tabs/windows in a browser session",
-  "license": "Apache-2.0",
-  "keywords": [
-    "tabs",
-    "windows",
-    "browser",
-    "multi tabs"
-  ],
-  "main": "dist/index.js",
+  "name": "browser-session-tabs",
+  "version": "1.0.0-alpha.0",
+  "description": "A light-wieght library for tracking multiple browser tabs in a web session.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "babel src --out-dir ./dist --source-maps --ignore ./test",
-    "test": "./node_modules/.bin/mocha --require @babel/register test/**/*test.js",
-    "prepare": "npm run-script build"
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json && npm run lint:format",
+    "lint:format": "prettier --check \"src/**/*.{ts,js}\"",
+    "lint:format:fix": "prettier --write \"src/**/*.{ts,js}\"",
+    "test": "jest --config jestconfig.json --coverage=true --collectCoverageFrom=src/**/*.{ts,js}",
+    "test:ci": "npm run test -- --ci",
+    "test:watch": "jest --config jestconfig.json --watch",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:prageeth/browser-tab-tracker.git"
+    "url": "git+https://github.com/pureartisan/browser-tab-tracker.git"
+  },
+  "keywords": [
+    "Browser Tab",
+    "Sessions",
+    "Tracking",
+    "Analytics"
+  ],
+  "author": "Prageeth Silva <prageethsilva@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pureartisan/browser-tab-tracker/issues"
+  },
+  "homepage": "https://github.com/pureartisan/browser-tab-tracker#readme",
+  "files": [
+    "lib/**/*"
+  ],
+  "devDependencies": {
+    "@types/jest": "^25.2.3",
+    "@types/js-cookie": "^2.2.6",
+    "@types/uuid": "^8.0.0",
+    "husky": "^4.2.5",
+    "jest": "^26.0.1",
+    "jest-junit": "^10.0.0",
+    "lint-staged": "^10.2.10",
+    "prettier": "^2.0.5",
+    "ts-jest": "^26.1.0",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.9.5"
   },
   "dependencies": {
-    "js-cookie": "^2.2.0"
+    "js-cookie": "^2.2.1",
+    "uuid": "^8.1.0"
   },
-  "peerDependencies": {},
-  "devDependencies": {
-    "@babel/cli": "latest",
-    "@babel/core": "latest",
-    "@babel/plugin-proposal-class-properties": "latest",
-    "@babel/plugin-proposal-object-rest-spread": "latest",
-    "@babel/preset-env": "latest",
-    "@babel/register": "latest",
-    "chai": "latest",
-    "coffeescript": "latest",
-    "mocha": "latest",
-    "sinon": "latest",
-    "sinon-chai": "latest"
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsc && lint-staged"
+    }
+  },
+  "jest-junit": {
+    "outputDirectory": "./reports/"
+  },
+  "lint-staged": {
+    "**/*.+(js|jsx|ts|tsx|md)": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }

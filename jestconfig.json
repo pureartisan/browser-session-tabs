@@ -1,0 +1,16 @@
+{
+    "reporters": [ "default", "jest-junit" ],
+    "transform": {
+      "^.+\\.(t|j)sx?$": "ts-jest"
+    },
+    "testPathIgnorePatterns": [ "/node_modules/", "/lib/", "/test/" ],
+    "testEnvironment": "jsdom",
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "/lib/"
+    ],
+    "testRegex": "(\\.|/)(test|spec)\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+}
