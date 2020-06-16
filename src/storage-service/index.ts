@@ -1,7 +1,6 @@
 import * as Cookies from 'js-cookie';
 
 export class StorageService {
-
   /**
    * Sets a given value identified by a given key, in session storage.
    * The value will be stored as a JSON string.
@@ -53,5 +52,4 @@ export class StorageService {
     }
     return defaultValue === undefined ? null : defaultValue;
   }
-
 }

@@ -1,8 +1,6 @@
 import { BrowserTabTracker } from './browser-tab-tracker';
 
-import {
-    BrowserTabTracker as BrowserTabTrackerSingleton
-} from './index';
+import { BrowserTabTracker as BrowserTabTrackerSingleton } from './index';
 
 jest.mock('./browser-tab-tracker');
 

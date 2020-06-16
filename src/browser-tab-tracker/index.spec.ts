@@ -7,12 +7,11 @@ jest.mock('../storage-service');
 const isUuidV4 = new RegExp(/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i);
 
 describe('BrowserTabTracker', () => {
-
   const storageService = {
     sessionStorageSet: jasmine.createSpy(),
     sessionStorageGet: jasmine.createSpy(),
     sessionCookieSet: jasmine.createSpy(),
-    sessionCookieGet: jasmine.createSpy(),
+    sessionCookieGet: jasmine.createSpy()
   };
 
   let service: BrowserTabTracker;
@@ -32,7 +31,9 @@ describe('BrowserTabTracker', () => {
     });
 
     it('should throw error when setting storageKey to an empty value', () => {
-      expect(() => { service.storageKey = '' }).toThrow();
+      expect(() => {
+        service.storageKey = '';
+      }).toThrow();
     });
   });
 
@@ -135,7 +136,6 @@ describe('BrowserTabTracker', () => {
       expect(storageService.sessionStorageSet).toHaveBeenCalledTimes(1);
       expect(storageService.sessionCookieSet).toHaveBeenCalledTimes(1);
     });
-
   });
 
   describe('sessionId', () => {
@@ -239,7 +239,6 @@ describe('BrowserTabTracker', () => {
       expect(storageService.sessionStorageSet).toHaveBeenCalledTimes(1);
       expect(storageService.sessionCookieSet).toHaveBeenCalledTimes(1);
     });
-
   });
 
   function buildSessionInfo(props: any = {}): SessionInfo {
@@ -247,5 +246,4 @@ describe('BrowserTabTracker', () => {
       ...props
     };
   }
-
 });

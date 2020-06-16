@@ -11,7 +11,6 @@ export interface SessionInfo {
 }
 
 export class BrowserTabTracker {
-
   private storageKeyName: string = DEFAULT_STORAGE_KEY;
 
   private sessionInfo: SessionInfo = null as any;
@@ -100,5 +99,4 @@ export class BrowserTabTracker {
       tab: 0
     };
   }
-
 }
