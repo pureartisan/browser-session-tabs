@@ -7,9 +7,13 @@ import {
 jest.mock('./browser-tab-tracker');
 
 describe('Public API', () => {
-  let singleton: jest.Mocked<BrowserTabTracker>;
+  it('should be an instance of BrowserTabTracker', () => {
+    expect(BrowserTabTrackerSingleton instanceof BrowserTabTracker).toBe(true);
+  });
 
-  beforeEach(() => {
-    singleton = (BrowserTabTracker as any).mock.instances[0];
+  it('should be a singleton', () => {
+    const instances = (BrowserTabTracker as any).mock.instances;
+    expect(instances).toHaveLength(1);
+    expect(BrowserTabTrackerSingleton).toBe(instances[0]);
   });
 });
