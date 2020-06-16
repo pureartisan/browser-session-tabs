@@ -56,15 +56,15 @@ We can use this for analytics or logging purposes to know when users have multip
 ```
 // Analytics
 analyticsTool.initialise({
-	'some-field-to-represent-session': BrowserTabTracker.sessionId,
-	'some-field-to-represent-tab': BrowserTabTracker.tabId
+    'some-field-to-represent-session': BrowserTabTracker.sessionId,
+    'some-field-to-represent-tab': BrowserTabTracker.tabId
 });
 
 // Logging
 logger.error({
-	error: 'some error message',
-	url: window.location.href,
+    error: 'some error message',
+    url: window.location.href,
     session: BrowserTabTracker.sessionId,
-	tab: BrowserTabTracker.tabId
+    tab: BrowserTabTracker.tabId
 });
 ```
