@@ -1,8 +1,11 @@
-import { get as CookiesGet, set as CookiesSet } from 'js-cookie';
+import * as Cookie from 'js-cookie';
 
 import { StorageService } from './index';
 
-jest.mock('js-cookie');
+jest.mock('js-cookie', () => ({
+  get: jasmine.createSpy(),
+  set: jasmine.createSpy()
+}));
 
 describe('StorageService', () => {
   let service: StorageService;
@@ -93,7 +96,7 @@ describe('StorageService', () => {
 
   describe('session cookie', () => {
     beforeEach(() => {
-      // get.mockClear();
+      (Cookie.set as jasmine.Spy).calls.reset();
     });
 
     describe('sessionCookieSet()', () => {
@@ -101,16 +104,16 @@ describe('StorageService', () => {
         service.sessionCookieSet('my-key', 'my-value');
 
         // session storage is called
-        expect(CookiesSet).toHaveBeenCalled();
+        expect(Cookie.set).toHaveBeenCalled();
         // value is stringified
-        expect(CookiesSet).toHaveBeenCalledWith('my-key', '"my-value"');
+        expect(Cookie.set).toHaveBeenCalledWith('my-key', '"my-value"');
       });
 
       it('should stringify object to json', () => {
         service.sessionCookieSet('my-key', { foo: 'bar' });
 
         const stringifiedJson = JSON.stringify({ foo: 'bar' });
-        expect(CookiesSet).toHaveBeenCalledWith('my-key', stringifiedJson);
+        expect(Cookie.set).toHaveBeenCalledWith('my-key', stringifiedJson);
       });
     });
 
@@ -119,17 +122,20 @@ describe('StorageService', () => {
 
       beforeEach(() => {
         mockCookieValue = undefined;
-        (CookiesGet as any).and.callFake(() => mockCookieValue);
+        const CookieGetSpy = Cookie.get as jasmine.Spy;
+        CookieGetSpy.and.callFake(() => mockCookieValue);
+        CookieGetSpy.calls.reset();
       });
 
-      fit('should return value from session storage', () => {
+      it('should return value from session storage', () => {
         mockCookieValue = JSON.stringify('foo');
 
         const result = service.sessionCookieGet('my-key');
 
         // session cookie is called
-        expect(CookiesGet).toHaveBeenCalled();
-        expect(CookiesGet).toHaveBeenCalledWith('my-key');
+        expect(Cookie.get).toHaveBeenCalled();
+
+        expect(Cookie.get).toHaveBeenCalledWith('my-key');
 
         // session cookie value is returned
         expect(result).toEqual('foo');
