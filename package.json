@@ -1,6 +1,6 @@
 {
   "name": "browser-session-tabs",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.0",
   "description": "A light-wieght library for tracking multiple browser tabs in a web session.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
