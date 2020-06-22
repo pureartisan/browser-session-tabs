@@ -4,8 +4,6 @@ import { BrowserTabTracker, SessionInfo } from './index';
 
 jest.mock('../storage-service');
 
-const isUuidV4 = new RegExp(/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i);
-
 describe('BrowserTabTracker', () => {
   const storageService = {
     sessionStorageSet: jasmine.createSpy(),
@@ -14,10 +12,10 @@ describe('BrowserTabTracker', () => {
     sessionCookieGet: jasmine.createSpy()
   };
 
-  let service: BrowserTabTracker;
+  let service: BrowserTabTracker<string>;
 
   beforeEach(() => {
-    service = new BrowserTabTracker(storageService as StorageService);
+    service = new BrowserTabTracker<string>(storageService as StorageService);
   });
 
   describe('storageKey', () => {
@@ -37,6 +35,28 @@ describe('BrowserTabTracker', () => {
     });
   });
 
+  describe('sessionIdGenerator', () => {
+    it('should throw error if session id generator is not set', () => {
+      expect(() => service.initialize()).toThrow();
+    });
+
+    it('should not throw error if session id generator is set', () => {
+      service.sessionIdGenerator = () => 'something';
+      expect(() => service.initialize()).not.toThrow();
+    });
+
+    it('should use session id generator to generate new session id', () => {
+      storageService.sessionStorageGet.and.returnValue(null);
+      storageService.sessionCookieGet.and.returnValue(null);
+
+      service.sessionIdGenerator = () => 'my-random-session-id';
+      service.initialize();
+
+      const result = service.sessionId;
+      expect(result).toEqual('my-random-session-id');
+    });
+  });
+
   describe('tabId', () => {
     beforeEach(() => {
       storageService.sessionStorageGet.and.returnValue(null);
@@ -46,9 +66,25 @@ describe('BrowserTabTracker', () => {
       storageService.sessionStorageSet.calls.reset();
       storageService.sessionCookieGet.calls.reset();
       storageService.sessionCookieSet.calls.reset();
+
+      service.sessionIdGenerator = () => 'dummy-id';
+    });
+
+    it('should throw error if not initialized', () => {
+      expect(() => {
+        const result = service.tabId;
+      }).toThrow();
+    });
+
+    it('should not throw error if initialized', () => {
+      service.initialize();
+      expect(() => {
+        const result = service.tabId;
+      }).not.toThrow();
     });
 
     it('should return a new tab id starting at 1 if there is not session storage', () => {
+      service.initialize();
       expect(service.tabId).toEqual('1');
     });
 
@@ -57,6 +93,8 @@ describe('BrowserTabTracker', () => {
         tab: 4
       });
       storageService.sessionStorageGet.and.returnValue(sessionInfo);
+
+      service.initialize();
 
       // same as already in session storage
       expect(service.tabId).toEqual('4');
@@ -75,6 +113,8 @@ describe('BrowserTabTracker', () => {
       });
       storageService.sessionStorageGet.and.returnValue(null);
       storageService.sessionCookieGet.and.returnValue(sessionInfo);
+
+      service.initialize();
 
       // incremented tab id from previous tab
       expect(service.tabId).toEqual('9');
@@ -97,7 +137,7 @@ describe('BrowserTabTracker', () => {
       storageService.sessionCookieGet.and.returnValue(sessionInfo);
 
       // info is retrieved
-      const result = service.tabId;
+      service.initialize();
 
       // saved in session storage (with incremented tab id)
       expect(storageService.sessionStorageSet).toHaveBeenCalled();
@@ -122,15 +162,15 @@ describe('BrowserTabTracker', () => {
       storageService.sessionCookieGet.and.returnValue(sessionInfo);
 
       // first retrieval
-      let result = service.tabId;
+      service.initialize();
 
       // saved the first time
       expect(storageService.sessionStorageSet).toHaveBeenCalledTimes(1);
       expect(storageService.sessionCookieSet).toHaveBeenCalledTimes(1);
 
-      // call again multiple times
-      result = service.tabId;
-      result = service.tabId;
+      // try to initialize multiple times
+      service.initialize();
+      service.initialize();
 
       // only saved the first time
       expect(storageService.sessionStorageSet).toHaveBeenCalledTimes(1);
@@ -147,12 +187,29 @@ describe('BrowserTabTracker', () => {
       storageService.sessionStorageSet.calls.reset();
       storageService.sessionCookieGet.calls.reset();
       storageService.sessionCookieSet.calls.reset();
+
+      service.sessionIdGenerator = () => 'dummy-id';
     });
 
-    it('should return a new session id in uuid v4 format session storage', () => {
+    it('should throw error if not initialized', () => {
+      expect(() => {
+        const result = service.sessionId;
+      }).toThrow();
+    });
+
+    it('should not throw error if initialized', () => {
+      service.initialize();
+      expect(() => {
+        const result = service.sessionId;
+      }).not.toThrow();
+    });
+
+    it('should return a new session id that was returned by the session id generator', () => {
+      service.sessionIdGenerator = () => 'my-random-session-id';
+      service.initialize();
+
       const result = service.sessionId;
-      expect(result).toBeTruthy();
-      expect(isUuidV4.test(result)).toBe(true);
+      expect(result).toEqual('my-random-session-id');
     });
 
     it('should return session id stored in session storage', () => {
@@ -160,6 +217,8 @@ describe('BrowserTabTracker', () => {
         id: 'my-session-id-from-storage'
       });
       storageService.sessionStorageGet.and.returnValue(sessionInfo);
+
+      service.initialize();
 
       // same as already in session storage
       expect(service.sessionId).toEqual('my-session-id-from-storage');
@@ -178,6 +237,8 @@ describe('BrowserTabTracker', () => {
       });
       storageService.sessionStorageGet.and.returnValue(null);
       storageService.sessionCookieGet.and.returnValue(sessionInfo);
+
+      service.initialize();
 
       // taken from session cookie
       expect(service.sessionId).toEqual('my-session-id-from-cookie');
@@ -200,7 +261,7 @@ describe('BrowserTabTracker', () => {
       storageService.sessionCookieGet.and.returnValue(sessionInfo);
 
       // info is retrieved
-      const result = service.sessionId;
+      service.initialize();
 
       // saved in session storage (with incremented tab id)
       expect(storageService.sessionStorageSet).toHaveBeenCalled();
@@ -225,15 +286,15 @@ describe('BrowserTabTracker', () => {
       storageService.sessionCookieGet.and.returnValue(sessionInfo);
 
       // first retrieval
-      let result = service.sessionId;
+      service.initialize();
 
       // saved the first time
       expect(storageService.sessionStorageSet).toHaveBeenCalledTimes(1);
       expect(storageService.sessionCookieSet).toHaveBeenCalledTimes(1);
 
-      // call again multiple times
-      result = service.sessionId;
-      result = service.sessionId;
+      // initialize again multiple times
+      service.initialize();
+      service.initialize();
 
       // only saved the first time
       expect(storageService.sessionStorageSet).toHaveBeenCalledTimes(1);
@@ -241,7 +302,7 @@ describe('BrowserTabTracker', () => {
     });
   });
 
-  function buildSessionInfo(props: any = {}): SessionInfo {
+  function buildSessionInfo(props: any = {}): SessionInfo<number> {
     return {
       ...props
     };

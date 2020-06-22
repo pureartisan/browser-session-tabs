@@ -1,19 +1,24 @@
-import { v4 as uuidv4 } from 'uuid';
 import { StorageService } from '../storage-service';
 
 const DEFAULT_STORAGE_KEY = 'browser-session-info';
 const REGEX_EMPTY_STRING = /^\s*$/;
-const INVALID_STORAGE_KEY_ERROR = 'Invalid storage key';
 
-export interface SessionInfo {
-  id: string;
+const INVALID_STORAGE_KEY_ERROR = 'Invalid storage key';
+const SESSION_ID_GENERATOR_NOT_SET_ERROR = 'Session ID generator not set';
+
+export interface SessionInfo<T> {
+  id: T;
   tab: number;
 }
 
-export class BrowserTabTracker {
+export type SessionIdGenerator<T> = () => T;
+
+export class BrowserTabTracker<T> {
   private storageKeyName: string = DEFAULT_STORAGE_KEY;
 
-  private sessionInfo: SessionInfo = null as any;
+  private sessionInfo: SessionInfo<T> = null as any;
+
+  private generator: SessionIdGenerator<T> = null as any;
 
   constructor(private storageService: StorageService) {}
 
@@ -23,21 +28,15 @@ export class BrowserTabTracker {
    * @returns a number as a string
    */
   get tabId(): string {
-    if (!this.sessionInfo) {
-      this.sessionInfo = this.generateSessionInfo();
-    }
     return `${this.sessionInfo.tab}`;
   }
 
   /**
    * The current session ID.
    * The session ID is shared across multiple browser tabs for a given session.
-   * @returns a UUID (v4) as a string
+   * @returns a value returned by the SessionIdGenerator
    */
-  get sessionId(): string {
-    if (!this.sessionInfo) {
-      this.sessionInfo = this.generateSessionInfo();
-    }
+  get sessionId(): T {
     return this.sessionInfo.id;
   }
 
@@ -57,10 +56,26 @@ export class BrowserTabTracker {
     this.storageKeyName = key;
   }
 
-  private generateSessionInfo(): SessionInfo {
+  /**
+   * Set the session ID generator.
+   */
+  set sessionIdGenerator(generator: SessionIdGenerator<T>) {
+    this.generator = generator;
+  }
+
+  /**
+   * This should be called only after the `sessionIdGenerator` and `storageKey` are set.
+   */
+  public initialize(): void {
+    if (!this.sessionInfo) {
+      this.sessionInfo = this.generateSessionInfo();
+    }
+  }
+
+  private generateSessionInfo(): SessionInfo<T> {
     // if the page has been refreshed in the same tab,
     // we expect the info to be in session storage already
-    let sessionInfo = this.storageService.sessionStorageGet<SessionInfo>(this.storageKeyName) as SessionInfo;
+    let sessionInfo = this.storageService.sessionStorageGet<SessionInfo<T>>(this.storageKeyName) as SessionInfo<T>;
 
     // first time ever on this browser tab?
     // we expect the session storage to not have the info
@@ -71,9 +86,9 @@ export class BrowserTabTracker {
     return sessionInfo;
   }
 
-  private generateNewTabId(): SessionInfo {
+  private generateNewTabId(): SessionInfo<T> {
     // check if there's already a session in a different tab
-    let sessionInfo = this.storageService.sessionCookieGet<SessionInfo>(this.storageKeyName) as SessionInfo;
+    let sessionInfo = this.storageService.sessionCookieGet<SessionInfo<T>>(this.storageKeyName) as SessionInfo<T>;
     if (!sessionInfo) {
       sessionInfo = this.startNewSession();
     }
@@ -93,10 +108,17 @@ export class BrowserTabTracker {
     }
   }
 
-  private startNewSession(): SessionInfo {
+  private startNewSession(): SessionInfo<T> {
+    this.validateSessionIdGenerator();
     return {
-      id: uuidv4(),
+      id: this.generator(),
       tab: 0
     };
+  }
+
+  private validateSessionIdGenerator(): void {
+    if (!this.generator) {
+      throw new Error(SESSION_ID_GENERATOR_NOT_SET_ERROR);
+    }
   }
 }
