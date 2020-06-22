@@ -13,12 +13,18 @@ export interface SessionInfo<T> {
 
 export type SessionIdGenerator<T> = () => T;
 
+export type SessionStartedCallback<T> = (sessionId: T, tabId: string) => void;
+
 export class BrowserTabTracker<T> {
   private storageKeyName: string = DEFAULT_STORAGE_KEY;
 
   private sessionInfo: SessionInfo<T> = null as any;
 
-  private generator: SessionIdGenerator<T> = null as any;
+  private sessionIdGenerator: SessionIdGenerator<T> = null as any;
+
+  private sessionStartedCallback?: SessionStartedCallback<T> = null as any;
+
+  private newSessionCreated = false;
 
   constructor(private storageService: StorageService) {}
 
@@ -48,27 +54,30 @@ export class BrowserTabTracker<T> {
   }
 
   /**
-   * Set the name used for the `session storage` item and `cookie`
-   * This needs to be a none empty string.
+   * This should be called only after the following`sessionIdGenerator` and `storageKey` are set.
    */
-  set storageKey(key: string) {
-    this.validateKey(key);
-    this.storageKeyName = key;
-  }
-
-  /**
-   * Set the session ID generator.
-   */
-  set sessionIdGenerator(generator: SessionIdGenerator<T>) {
-    this.generator = generator;
-  }
-
-  /**
-   * This should be called only after the `sessionIdGenerator` and `storageKey` are set.
-   */
-  public initialize(): void {
+  public initialize(options: {
+    sessionIdGenerator: SessionIdGenerator<T>;
+    sessionStartedCallback?: SessionStartedCallback<T>;
+    storageKey?: string;
+  }): void {
     if (!this.sessionInfo) {
+      // set options
+      this.validateSessionIdGenerator(options.sessionIdGenerator);
+      this.sessionIdGenerator = options.sessionIdGenerator;
+      this.sessionStartedCallback = options.sessionStartedCallback;
+      if (options.storageKey) {
+        this.validateKey(options.storageKey);
+        this.storageKeyName = options.storageKey;
+      }
+
+      // fill in session info
       this.sessionInfo = this.generateSessionInfo();
+
+      // new session? then trigger the callback
+      if (this.newSessionCreated && this.sessionStartedCallback) {
+        this.sessionStartedCallback(this.sessionId, this.tabId);
+      }
     }
   }
 
@@ -109,15 +118,15 @@ export class BrowserTabTracker<T> {
   }
 
   private startNewSession(): SessionInfo<T> {
-    this.validateSessionIdGenerator();
+    this.newSessionCreated = true;
     return {
-      id: this.generator(),
+      id: this.sessionIdGenerator(),
       tab: 0
     };
   }
 
-  private validateSessionIdGenerator(): void {
-    if (!this.generator) {
+  private validateSessionIdGenerator(generator: SessionStartedCallback<T>): void {
+    if (!generator) {
       throw new Error(SESSION_ID_GENERATOR_NOT_SET_ERROR);
     }
   }
