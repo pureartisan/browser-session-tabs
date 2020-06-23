@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pureartisan/browser-tab-tracker.git"
+    "url": "git+https://github.com/pureartisan/browser-session-tabs.git"
   },
   "keywords": [
     "Browser Tab",
@@ -30,9 +30,9 @@
   "author": "Prageeth Silva <prageethsilva@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pureartisan/browser-tab-tracker/issues"
+    "url": "https://github.com/pureartisan/browser-session-tabs/issues"
   },
-  "homepage": "https://github.com/pureartisan/browser-tab-tracker#readme",
+  "homepage": "https://github.com/pureartisan/browser-session-tabs#readme",
   "files": [
     "lib/**/*"
   ],
