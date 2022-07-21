@@ -54,6 +54,13 @@ export class BrowserTabTracker<T> {
   }
 
   /**
+   * Check if the service was initialized
+   */
+  get initialized(): boolean {
+    return Boolean(this.sessionInfo);
+  }
+
+  /**
    * This should be called only after the following`sessionIdGenerator` and `storageKey` are set.
    */
   public initialize(options: {

@@ -395,6 +395,36 @@ describe('BrowserTabTracker', () => {
     });
   });
 
+  describe('initialized', () => {
+    let sessionIdGenerator: SessionIdGenerator<string>;
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(null);
+
+      sessionIdGenerator = () => 'dummy-id';
+    });
+
+    it('should not throw error if not initialized', () => {
+      expect(() => {
+        const result = service.initialized;
+      }).not.toThrow();
+    });
+
+    it('should return false if not initialized', () => {
+      expect(service.initialized).toEqual(false);
+    });
+
+    it('should return true if initialized', () => {
+      sessionIdGenerator = () => 'my-custom-random-session-id';
+      service.initialize({ sessionIdGenerator });
+
+      expect(service.initialized).toEqual(true);
+    });
+  });
+
   function buildSessionInfo(props: any = {}): SessionInfo<number> {
     return {
       ...props
