@@ -33,8 +33,8 @@ export class BrowserTabTracker<T> {
    * The tab ID starts from 1, and increments for every tab opened in the session.
    * @returns a number as a string
    */
-  get tabId(): string {
-    return `${this.sessionInfo.tab}`;
+  get tabId(): string | undefined {
+    return this.sessionInfo ? `${this.sessionInfo?.tab}` : undefined;
   }
 
   /**
@@ -42,8 +42,8 @@ export class BrowserTabTracker<T> {
    * The session ID is shared across multiple browser tabs for a given session.
    * @returns a value returned by the SessionIdGenerator
    */
-  get sessionId(): T {
-    return this.sessionInfo.id;
+  get sessionId(): T | undefined {
+    return this.sessionInfo?.id;
   }
 
   /**
@@ -51,6 +51,13 @@ export class BrowserTabTracker<T> {
    */
   get storageKey(): string {
     return this.storageKeyName;
+  }
+
+  /**
+   * Check if the service was initialized
+   */
+  get initialized(): boolean {
+    return Boolean(this.sessionInfo);
   }
 
   /**
@@ -76,7 +83,7 @@ export class BrowserTabTracker<T> {
 
       // new session? then trigger the callback
       if (this.newSessionCreated && this.sessionStartedCallback) {
-        this.sessionStartedCallback(this.sessionId, this.tabId);
+        this.sessionStartedCallback(this.sessionId!, this.tabId!);
       }
     }
   }

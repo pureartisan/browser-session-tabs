@@ -81,6 +81,10 @@ const sessionId = BrowserTabTracker.sessionId;
  */
 const tabId: string = BrowserTabTracker.tabId;
 
+/*
+ * Check if the tracker is initialized.
+ */
+const isInitialized: boolean = BrowserTabTracker.initialized;
 ```
 
 ## Tracking Purposes

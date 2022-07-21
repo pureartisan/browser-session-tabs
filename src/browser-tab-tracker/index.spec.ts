@@ -156,10 +156,14 @@ describe('BrowserTabTracker', () => {
       sessionIdGenerator = () => 'dummy-id';
     });
 
-    it('should throw error if not initialized', () => {
+    it('should not throw error if not initialized', () => {
       expect(() => {
         const result = service.tabId;
-      }).toThrow();
+      }).not.toThrow();
+    });
+
+    it('should return undefined if not initialized', () => {
+      expect(service.tabId).toBeUndefined();
     });
 
     it('should not throw error if initialized', () => {
@@ -276,10 +280,14 @@ describe('BrowserTabTracker', () => {
       sessionIdGenerator = () => 'dummy-id';
     });
 
-    it('should throw error if not initialized', () => {
+    it('should not throw error if not initialized', () => {
       expect(() => {
         const result = service.sessionId;
-      }).toThrow();
+      }).not.toThrow();
+    });
+
+    it('should return undefined if not initialized', () => {
+      expect(service.sessionId).toBeUndefined();
     });
 
     it('should not throw error if initialized', () => {
@@ -384,6 +392,36 @@ describe('BrowserTabTracker', () => {
       // only saved the first time
       expect(storageService.sessionStorageSet).toHaveBeenCalledTimes(1);
       expect(storageService.sessionCookieSet).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('initialized', () => {
+    let sessionIdGenerator: SessionIdGenerator<string>;
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(null);
+
+      sessionIdGenerator = () => 'dummy-id';
+    });
+
+    it('should not throw error if not initialized', () => {
+      expect(() => {
+        const result = service.initialized;
+      }).not.toThrow();
+    });
+
+    it('should return false if not initialized', () => {
+      expect(service.initialized).toEqual(false);
+    });
+
+    it('should return true if initialized', () => {
+      sessionIdGenerator = () => 'my-custom-random-session-id';
+      service.initialize({ sessionIdGenerator });
+
+      expect(service.initialized).toEqual(true);
     });
   });
 
