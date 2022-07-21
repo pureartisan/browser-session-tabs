@@ -34,7 +34,7 @@ export class BrowserTabTracker<T> {
    * @returns a number as a string
    */
   get tabId(): string {
-    return `${this.sessionInfo.tab}`;
+    return `${this.sessionInfo?.tab ?? ''}`;
   }
 
   /**
@@ -42,8 +42,8 @@ export class BrowserTabTracker<T> {
    * The session ID is shared across multiple browser tabs for a given session.
    * @returns a value returned by the SessionIdGenerator
    */
-  get sessionId(): T {
-    return this.sessionInfo.id;
+  get sessionId(): T | undefined {
+    return this.sessionInfo?.id;
   }
 
   /**
@@ -76,7 +76,7 @@ export class BrowserTabTracker<T> {
 
       // new session? then trigger the callback
       if (this.newSessionCreated && this.sessionStartedCallback) {
-        this.sessionStartedCallback(this.sessionId, this.tabId);
+        this.sessionStartedCallback(this.sessionId!, this.tabId);
       }
     }
   }

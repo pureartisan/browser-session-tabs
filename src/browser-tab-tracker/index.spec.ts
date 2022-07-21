@@ -156,10 +156,14 @@ describe('BrowserTabTracker', () => {
       sessionIdGenerator = () => 'dummy-id';
     });
 
-    it('should throw error if not initialized', () => {
+    it('should not throw error if not initialized', () => {
       expect(() => {
         const result = service.tabId;
-      }).toThrow();
+      }).not.toThrow();
+    });
+
+    it('should return empty string if not initialized', () => {
+      expect(service.tabId).toEqual('');
     });
 
     it('should not throw error if initialized', () => {
@@ -276,10 +280,14 @@ describe('BrowserTabTracker', () => {
       sessionIdGenerator = () => 'dummy-id';
     });
 
-    it('should throw error if not initialized', () => {
+    it('should not throw error if not initialized', () => {
       expect(() => {
         const result = service.sessionId;
-      }).toThrow();
+      }).not.toThrow();
+    });
+
+    it('should return undefined if not initialized', () => {
+      expect(service.sessionId).toBeUndefined();
     });
 
     it('should not throw error if initialized', () => {
