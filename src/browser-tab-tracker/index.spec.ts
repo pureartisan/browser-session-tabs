@@ -6,10 +6,10 @@ jest.mock('../storage-service');
 
 describe('BrowserTabTracker', () => {
   const storageService = {
-    sessionStorageSet: jasmine.createSpy(),
-    sessionStorageGet: jasmine.createSpy(),
-    sessionCookieSet: jasmine.createSpy(),
-    sessionCookieGet: jasmine.createSpy()
+    sessionStorageSet: jest.fn(),
+    sessionStorageGet: jest.fn(),
+    sessionCookieSet: jest.fn(),
+    sessionCookieGet: jest.fn()
   };
 
   let service: BrowserTabTracker<string>;
@@ -26,8 +26,8 @@ describe('BrowserTabTracker', () => {
 
   describe('initialize', () => {
     beforeEach(() => {
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(null);
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(null);
     });
 
     describe('storageKey', () => {
@@ -95,13 +95,13 @@ describe('BrowserTabTracker', () => {
 
       it('should be able to set storage key when initializing', () => {
         // session info not in storage, so this will be a new session
-        storageService.sessionStorageGet.and.returnValue(null);
-        storageService.sessionCookieGet.and.returnValue(null);
+        storageService.sessionStorageGet.mockReturnValue(null);
+        storageService.sessionCookieGet.mockReturnValue(null);
 
         // new session id
         sessionIdGenerator = () => 'my-new-session-id';
 
-        const callback = jasmine.createSpy();
+        const callback = jest.fn();
         service.initialize({
           sessionIdGenerator,
           sessionStartedCallback: callback
@@ -116,10 +116,10 @@ describe('BrowserTabTracker', () => {
 
       it('should not trigger the callback multiple times', () => {
         // session info not in storage, so this will be a new session
-        storageService.sessionStorageGet.and.returnValue(null);
-        storageService.sessionCookieGet.and.returnValue(null);
+        storageService.sessionStorageGet.mockReturnValue(null);
+        storageService.sessionCookieGet.mockReturnValue(null);
 
-        const callback = jasmine.createSpy();
+        const callback = jest.fn();
         service.initialize({
           sessionIdGenerator,
           sessionStartedCallback: callback
@@ -148,13 +148,10 @@ describe('BrowserTabTracker', () => {
     let sessionIdGenerator: SessionIdGenerator<string>;
 
     beforeEach(() => {
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(null);
+      jest.resetAllMocks();
 
-      storageService.sessionStorageGet.calls.reset();
-      storageService.sessionStorageSet.calls.reset();
-      storageService.sessionCookieGet.calls.reset();
-      storageService.sessionCookieSet.calls.reset();
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(null);
 
       sessionIdGenerator = () => 'dummy-id';
     });
@@ -181,7 +178,7 @@ describe('BrowserTabTracker', () => {
       const sessionInfo = buildSessionInfo({
         tab: 4
       });
-      storageService.sessionStorageGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(sessionInfo);
 
       service.initialize({ sessionIdGenerator });
 
@@ -200,8 +197,8 @@ describe('BrowserTabTracker', () => {
       const sessionInfo = buildSessionInfo({
         tab: 8
       });
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(sessionInfo);
 
       service.initialize({ sessionIdGenerator });
 
@@ -222,8 +219,8 @@ describe('BrowserTabTracker', () => {
         id: 'my-session-id',
         tab: 3
       });
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(sessionInfo);
 
       // info is retrieved
       service.initialize({ sessionIdGenerator });
@@ -247,8 +244,8 @@ describe('BrowserTabTracker', () => {
       const sessionInfo = buildSessionInfo({
         tab: 2
       });
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(sessionInfo);
 
       // first retrieval
       service.initialize({ sessionIdGenerator });
@@ -271,13 +268,10 @@ describe('BrowserTabTracker', () => {
     let sessionIdGenerator: SessionIdGenerator<string>;
 
     beforeEach(() => {
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(null);
+      jest.resetAllMocks();
 
-      storageService.sessionStorageGet.calls.reset();
-      storageService.sessionStorageSet.calls.reset();
-      storageService.sessionCookieGet.calls.reset();
-      storageService.sessionCookieSet.calls.reset();
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(null);
 
       sessionIdGenerator = () => 'dummy-id';
     });
@@ -307,7 +301,7 @@ describe('BrowserTabTracker', () => {
       const sessionInfo = buildSessionInfo({
         id: 'my-session-id-from-storage'
       });
-      storageService.sessionStorageGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(sessionInfo);
 
       service.initialize({ sessionIdGenerator });
 
@@ -326,8 +320,8 @@ describe('BrowserTabTracker', () => {
       const sessionInfo = buildSessionInfo({
         id: 'my-session-id-from-cookie'
       });
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(sessionInfo);
 
       service.initialize({ sessionIdGenerator });
 
@@ -348,8 +342,8 @@ describe('BrowserTabTracker', () => {
         id: 'my-session-id',
         tab: 3
       });
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(sessionInfo);
 
       // info is retrieved
       service.initialize({ sessionIdGenerator });
@@ -373,8 +367,8 @@ describe('BrowserTabTracker', () => {
       const sessionInfo = buildSessionInfo({
         id: 'my-session-id'
       });
-      storageService.sessionStorageGet.and.returnValue(null);
-      storageService.sessionCookieGet.and.returnValue(sessionInfo);
+      storageService.sessionStorageGet.mockReturnValue(null);
+      storageService.sessionCookieGet.mockReturnValue(sessionInfo);
 
       // first retrieval
       service.initialize({ sessionIdGenerator });
