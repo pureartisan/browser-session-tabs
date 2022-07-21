@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "tslint -p tsconfig.json && npm run lint:format",
+    "lint": "eslint && npm run lint:format",
     "lint:format": "prettier --check \"src/**/*.{ts,js}\"",
     "lint:format:fix": "prettier --write \"src/**/*.{ts,js}\"",
     "test": "jest --config jestconfig.json --coverage=true --collectCoverageFrom=src/**/*.{ts,js}",
@@ -43,6 +43,7 @@
     "eslint": "^8.20.0",
     "husky": "^4.2.5",
     "jest": "^28.1.3",
+    "jest-environment-jsdom": "^28.1.3",
     "jest-junit": "^14.0.0",
     "lint-staged": "^10.2.10",
     "prettier": "2.7",

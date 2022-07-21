@@ -3,8 +3,8 @@ import * as Cookie from 'js-cookie';
 import { StorageService } from './index';
 
 jest.mock('js-cookie', () => ({
-  get: jasmine.createSpy(),
-  set: jasmine.createSpy()
+  get: jest.fn(),
+  set: jest.fn()
 }));
 
 describe('StorageService', () => {
@@ -17,7 +17,7 @@ describe('StorageService', () => {
   describe('session storage', () => {
     describe('sessionStorageSet()', () => {
       beforeEach(() => {
-        spyOn(window.sessionStorage.__proto__, 'setItem');
+        jest.spyOn(window.sessionStorage.__proto__, 'setItem');
       });
 
       it('should set value in session storage', () => {
@@ -42,7 +42,7 @@ describe('StorageService', () => {
 
       beforeEach(() => {
         mockSessionStorageGetReturn = null;
-        spyOn(window.sessionStorage.__proto__, 'getItem').and.callFake(() => mockSessionStorageGetReturn);
+        jest.spyOn(window.sessionStorage.__proto__, 'getItem').mockImplementation(() => mockSessionStorageGetReturn);
       });
 
       it('should return value from session storage', () => {
@@ -96,7 +96,7 @@ describe('StorageService', () => {
 
   describe('session cookie', () => {
     beforeEach(() => {
-      (Cookie.set as jasmine.Spy).calls.reset();
+      jest.resetAllMocks();
     });
 
     describe('sessionCookieSet()', () => {
@@ -121,10 +121,10 @@ describe('StorageService', () => {
       let mockCookieValue: any;
 
       beforeEach(() => {
+        jest.resetAllMocks();
+
         mockCookieValue = undefined;
-        const CookieGetSpy = Cookie.get as jasmine.Spy;
-        CookieGetSpy.and.callFake(() => mockCookieValue);
-        CookieGetSpy.calls.reset();
+        (Cookie.get as any).mockImplementation(() => mockCookieValue);
       });
 
       it('should return value from session storage', () => {
