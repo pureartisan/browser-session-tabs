@@ -162,8 +162,8 @@ describe('BrowserTabTracker', () => {
       }).not.toThrow();
     });
 
-    it('should return empty string if not initialized', () => {
-      expect(service.tabId).toEqual('');
+    it('should return undefined if not initialized', () => {
+      expect(service.tabId).toBeUndefined();
     });
 
     it('should not throw error if initialized', () => {
