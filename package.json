@@ -37,21 +37,20 @@
     "lib/**/*"
   ],
   "devDependencies": {
-    "@types/jest": "^25.2.3",
-    "@types/js-cookie": "^2.2.6",
+    "@types/jest": "^28.1.6",
+    "@types/js-cookie": "^3.0.2",
     "@types/uuid": "^8.0.0",
+    "eslint": "^8.20.0",
     "husky": "^4.2.5",
-    "jest": "^26.0.1",
-    "jest-junit": "^10.0.0",
+    "jest": "^28.1.3",
+    "jest-junit": "^14.0.0",
     "lint-staged": "^10.2.10",
-    "prettier": "^2.0.5",
-    "ts-jest": "^26.1.0",
-    "tslint": "^6.1.2",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "3.2.4"
+    "prettier": "2.7",
+    "ts-jest": "^28.0.7",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
-    "js-cookie": "^2.2.1"
+    "js-cookie": "^3.0.1"
   },
   "husky": {
     "hooks": {
